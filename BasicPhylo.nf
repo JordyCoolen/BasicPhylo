@@ -2,7 +2,7 @@
 
 // (Tool) params
 params.reads                = "$baseDir/data/raw_input/20300134001-1_MB_R{1,2}.fastq.gz"
-params.outDir               = "$baseDir"
+params.outDir               = "$baseDir/output"
 params.threads              = 4
 // SKA Fastq
 params.kmer                 = "15"
@@ -47,7 +47,7 @@ BASICPHYLO V0.1
 ============INPUT===============
 reads      : $params.reads
 filename   : $samplename
-
+outDir     : $outDir
 ~~~~~~~~~~~~parameters~~~~~~~~~~
 threads    : $threads
 bootstrap  : $bootstrap
@@ -148,15 +148,15 @@ process iqTree{
 }
 
 process rCode{
-    //conda 'python=3.8.5 r::r-base=3.6.1 conda-forge::r-cowplot=1.1.0 //bioconda::bioconductor-ggtree=1.8.2 r::r-ggplot2=3.1.1 bioconda::bioconductor-treeio=1.0.2'
+    //conda 'python=3.8.5 r::r-base=3.6.1 conda-forge::r-cowplot=1.1.0 bioconda::bioconductor-ggtree=1.8.2 r::r-ggplot2=3.1.1 bioconda::biocond$
+    //conda 'python r::r-ggplot2 bioconda::bioconductor-ggtree conda-forge::r-cowplot bioconda::bioconductor-treeio'
+    //conda install -c r r-base=3.6.1
+    //conda install -c bioconda bioconductor-ggtree=1.8.2
+    //conda install -c r r-ggplot2=3.1.1
+    //conda install -c bioconda bioconductor-treeio=1.0.2-0
+    //conda install -c conda-forge r-cowplot=1.1.0
 
-    //r::r-base=3.6.1
-    //bioconda::bioconductor-ggtree=1.8.2
-    //r::r-ggplot2=3.1.1
-    //bioconda::bioconductor-treeio=1.0.2
-    //conda-forge::r-cowplot=1.1.0
-
-    conda "${baseDir}/conda/env-R/"
+    conda "${baseDir}/conda/env-41038bd246722f75f387d1ef4a449043/"
     input:
     file(newick) from tree_file
 

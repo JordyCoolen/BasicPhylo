@@ -13,8 +13,8 @@ do
     echo "${base}_R1${2}"
     echo "${base}_R2${2}"
 
-    singularity exec --bind ${PWD}:/workflow,${1}:/workflow/input \
+    singularity exec --bind ${PWD}:/workflow,${1}:/input \
     ${4} nextflow run BasicPhylo.nf \
-    --reads "/workflow/input/${base}_R{1,2}${2}" --outDir /workflow/output/ \
+    --reads "/input/${base}_R{1,2}${2}" --outDir /workflow/output/ \
     --threads ${3} --bootstrap 1000 --proportion 0.3 -resume
 done
