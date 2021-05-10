@@ -10,3 +10,5 @@ flowchart.png.*
 extra/*
 .idea/*
 data/new_fasta/*
+.nextflow/*
+.nextflow.log*
