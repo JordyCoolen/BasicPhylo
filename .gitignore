@@ -12,3 +12,4 @@ extra/*
 data/new_fasta/*
 .nextflow/*
 .nextflow.log*
+R/sample_cluster.txt

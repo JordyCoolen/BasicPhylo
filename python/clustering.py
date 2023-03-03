@@ -23,7 +23,7 @@ def create_cluster_file(path, template, sample):
     """
     with open(f"{path}sample_cluster.txt", "w") as file:
         file.write(template)
-        file.write(f"{sample}\tSample\tSample\tmaroon1")
+        file.write(f"\n{sample}\tSample\tSample\tmaroon1")
         file.close()
 
 

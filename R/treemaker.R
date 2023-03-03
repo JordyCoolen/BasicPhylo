@@ -11,7 +11,9 @@ library(cowplot)
 
 args <- commandArgs()
 #read cluster table.
-cluster <- read.table(file= args[6], sep="\t", stringsAsFactor=F)
+cluster <- read.table(file= args[6], sep="\t", stringsAsFactor=F, header=1)
+
+print(cluster)
 
 #create color vector from cluster color column.
 coloring <- c("Slow" = "white", "Rapid" = "gray14")
@@ -21,13 +23,11 @@ for (row in 1:nrow(cluster)) {
   coloring[cluster[row, "cluster"]] = cluster[row, "color"]
 }
 
-
 #initiate tree.
 tree <- read.tree(file= args[7])
 p <- ggtree(tree, branch.length = 'none')
 # add organism names to tree.
-p <- p + geom_tiplab(size=5)
-
+p <- p + geom_tiplab(size=3.5)
 
 # Start listener for PDF file, file height is variable for amount of samples.
 pdf(file = args[8], width = 20, height = (nrow(cluster)/5))
@@ -36,6 +36,12 @@ pdf(file = args[8], width = 20, height = (nrow(cluster)/5))
 # Create coloured labels and prints the tree.
 print(gheatmap(p, cluster[,1:2], offset = 5, width=0.2, color="black") + 
   scale_fill_manual(values=coloring))
+
+# extra circular tree
+t <- ggtree(tree, layout="fan", size=0.1)
+# add organism names to tree.
+t <- t + geom_tiplab2(size=2)
+print(t)
 dev.off()
 
 

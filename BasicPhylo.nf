@@ -4,45 +4,35 @@
 params.reads                = "$baseDir/data/raw_input/20300134001-1_MB_R{1,2}.fastq.gz"
 params.outDir               = "$baseDir/output"
 params.threads              = 4
-// SKA Fastq
-params.kmer                 = "15"
-params.quality_score        = "20"
-params.coverage             = "4"
-// SKA Align
-params.proportion           = "0.3"
-// Iq Tree
-params.bootstrap            = 1000
-params.contree              = "false" // is not working
+// MASH
+params.sketchsize                 = "10000"
 
 // Parsing the input parameters
 outDir                      = "$params.outDir"
 def samplename                = file("$params.reads").simpleName[0].split('_')[0]
 threads                     = "$params.threads"
 // SKA Fastq
-kmer                        = "$params.kmer"
-quality_score               = "$params.quality_score"
-coverage                    = "$params.coverage"
-// SKA Align
-proportion                  = "$params.proportion"
-// Iq Tree
-bootstrap                   = "$params.bootstrap"
-contree                     = "$params.contree"
+sketchsize                        = "$params.sketchsize"
 
 // Database
-database                    = "$baseDir/db/ref_15mer_${proportion}_variants.skf"
+//database                    = "$baseDir/db/ref_15mer_${proportion}_variants.skf"
+//database                    = "$baseDir/db/Tortolli.msh"
+//database                    = "$baseDir/db/Tortolli_10k.msh"
+database                    = "$baseDir/db/20230303_database_10K.msh"
 
 // Path prefixes
 r_folder                    = "$baseDir/R/"
 
 // Tool paths
-cluster_sample              = "$baseDir/R/clustering.py"
+cluster_sample              = "$baseDir/python/clustering.py"
 create_tree                 = "$baseDir/R/treemaker.R"
 to_json                     = "$baseDir/python/finalize.py"
+dendropy                    = "$baseDir/python/dendro.py"
 
-parameters = "${kmer},${quality_score},${coverage},${proportion},${bootstrap},${contree}"
+parameters = "${sketchsize}"
 
 log.info """
-BASICPHYLO V0.1
+BASICPHYLO V0.2
 
 ============INPUT===============
 reads      : $params.reads
@@ -50,18 +40,15 @@ filename   : $samplename
 outDir     : $outDir
 ~~~~~~~~~~~~parameters~~~~~~~~~~
 threads    : $threads
-bootstrap  : $bootstrap
-proportion : $proportion
-kmer       : $kmer
-quality_score   : $quality_score
-coverage        : $coverage
+sketchsize : $sketchsize
 
 ~~~~~~~~~~~Databases~~~~~~~~~~~~
 database    : $database
 
 ~~~~~~~~~~~Authors~~~~~~~~~~~~~~
-        Paul Verhoeven
         J.P.M. Coolen
+        Pieter Koopman
+        Paul Verhoeven (v0.1)
 ================================
 """
 
@@ -101,49 +88,53 @@ process '1A_clean_reads' {
 }
 
 
-// SKA Fastq
-process splitKmerReads{
-    conda 'bioconda::ska=1.0'
-    publishDir outDir + "/${samplename}/ska/", mode: 'copy', pattern: "*.skf"
+// Mash sketch of Fastq reads
+process create_mash_sketch_reads{
+    conda 'bioconda::mash=2.1'
+    publishDir outDir + "/${samplename}/mash/", mode: 'copy', pattern: "*.msh"
 	input:
 	set file(forward_read), file(reverse_read) from fastp_2A
 
 	output:
-	file "*.skf" into split_to_align, split_to_compare
+	file "${samplename}.msh" into to_create_distance, to_get_stats
 
 	script:
 	"""
-	ska fastq -k ${kmer} -c ${coverage} -q ${quality_score} -o ${samplename}_${proportion} $forward_read $reverse_read
+    #export LD_LIBRARY_PATH="/home/location/gsl/lib"
+    cat $forward_read $reverse_read > ${samplename}
+    mash sketch -s $sketchsize -r -m 2 ${samplename} -o ${samplename}
 	"""
 }
 
-// SKA Align
-process alignSplitFile{
-    conda 'bioconda::ska=1.0'
-    publishDir outDir + "/${samplename}/ska/", mode: 'copy', pattern: "*.aln"
+// Mash paste and distance
+process create_mash_distance_file{
+    conda 'bioconda::mash=2.1'
+    publishDir outDir + "/${samplename}/mash/", mode: 'copy', pattern: "*.dist"
     input:
-    file(split_kmer) from split_to_align
+    file(sample_mash) from to_create_distance
 
     output:
-    file "*.aln" into alignment
+    file "*.dist" into distance
+    file "total.msh" into total_mash
     script:
     """
-    ska align -v -p ${proportion} ${database} ${split_kmer} -o ${samplename}_${proportion}
+    mash paste total ${sample_mash} ${database}
+    mash dist -s $sketchsize -t total.msh total.msh > table.dist
     """
 }
 
-process iqTree{
-    conda 'bioconda::iqtree=2.0.3'
-    publishDir outDir + "/${samplename}/iqtree/", mode: 'copy'
+process create_dendogram_of_distances{
+    conda 'bioconda::dendropy=4.5.2'
+    publishDir outDir + "/${samplename}/dendropy/", mode: 'copy'
     input:
-    file(alignment_file) from alignment
+    file(distance_file) from distance
 
     output:
-    file "*.contree" into tree_file
+    file "*.tre" into tree_file
 
     script:
     """
-    iqtree -s ${alignment_file} -st DNA -m GTR+G+ASC -nt ${threads} -bb ${bootstrap} -pre ${samplename}_${proportion}
+    python ${dendropy} --input ${distance_file} --output ${samplename}
     """
 }
 
@@ -156,44 +147,47 @@ process rCode{
     //conda install -c bioconda bioconductor-treeio=1.0.2-0
     //conda install -c conda-forge r-cowplot=1.1.0
 
-    conda "${baseDir}/conda/env-41038bd246722f75f387d1ef4a449043/"
+    //conda "${baseDir}/conda/env-41038bd246722f75f387d1ef4a449043/"
+    conda "${baseDir}/conda/env-R"
     input:
     file(newick) from tree_file
 
     script:
     filename = newick.baseName
     pdf_output = outDir + "/${samplename}/${filename}.pdf"
-    input = outDir + "/${samplename}/iqtree/${newick}"
+    input = outDir + "/${samplename}/dendropy/${newick}"
     """
     python ${cluster_sample} ${filename} ${r_folder}
     Rscript "${r_folder}treemaker.R" "${r_folder}sample_cluster.txt" ${input} ${pdf_output}
     """
 }
 
-process skaCompare{
-    conda 'bioconda::ska=1.0'
-    publishDir outDir + "/${samplename}/ska/", mode: 'copy', pattern: "*.tsv"
+process mash_dist_stats{
+    conda 'bioconda::mash=2.1'
+    publishDir outDir + "/${samplename}/mash/", mode: 'copy', pattern: "*.txt"
 	input:
-	file(split_kmer) from split_to_compare
+	file(total) from total_mash
+    file(sample) from to_get_stats
 
 	output:
-	file "*.tsv" into split_distances
+	file "*.txt" into split_distances
 
 	script:
 	"""
-	ska compare ${database} -q ${split_kmer} > ${samplename}_${proportion}.tsv
+    mash dist -s $sketchsize ${sample} ${total} > stats.txt
 	"""
 }
 
-process jsonify{
-    conda 'python=3.8.5 anaconda::pandas=1.1.3'
-	input:
-	file(distance_dataframe) from split_distances
-
-	script:
-	result_folder = outDir + "/${samplename}/"
-	"""
-	python ${to_json} ${distance_dataframe} ${result_folder} ${parameters}
-	"""
-}
+//TODO: need to fix and check headers etc.
+//process jsonify{
+//    conda 'python=3.8.5 anaconda::pandas=1.1.3'
+//	input:
+//	file(distance_dataframe) from split_distances
+//
+//	script:
+//	result_folder = outDir + "/${samplename}/"
+//	"""
+//	python ${to_json} ${distance_dataframe} ${result_folder} ${parameters}
+//	"""
+//}
 
