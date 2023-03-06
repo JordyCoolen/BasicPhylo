@@ -48,6 +48,7 @@ database    : $database
 ~~~~~~~~~~~Authors~~~~~~~~~~~~~~
         J.P.M. Coolen
         Pieter Koopman
+        Jodie Schildkraut (v0.1)
         Paul Verhoeven (v0.1)
 ================================
 """
