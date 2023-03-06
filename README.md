@@ -16,6 +16,7 @@ can be calculated to see batch matching Mycobacteria species.
 
 ## Output example
 ![Alt text](images/Sample.png?raw=true "Output example")
+![Alt text](images/Sample2.png?raw=true "Output example")
 
 ## Authors
 J.P.M. Coolen 
