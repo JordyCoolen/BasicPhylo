@@ -4,6 +4,7 @@
 params.reads                = "$baseDir/data/raw_input/20300134001-1_MB_R{1,2}.fastq.gz"
 params.outDir               = "$baseDir/output"
 params.threads              = 4
+params.database             = "Tortoli_10k.msh"
 // MASH
 params.sketchsize                 = "10000"
 
@@ -17,7 +18,7 @@ sketchsize                        = "$params.sketchsize"
 // Database
 //database                    = "$baseDir/db/ref_15mer_${proportion}_variants.skf"
 //database                    = "$baseDir/db/Tortolli.msh"
-database                    = "$baseDir/db/Tortoli_10k.msh"
+database                    = "$baseDir/db/$params.database"
 //database                    = "$baseDir/db/20230303_database_10K.msh"
 
 // Path prefixes
