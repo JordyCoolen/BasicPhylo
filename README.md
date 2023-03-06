@@ -1,5 +1,5 @@
-#BASICPHYLO V0.2
-#New implementation with mash
+# BASICPHYLO V0.2
+### New implementation with mash
 
 ## Table of contents
 * [Background](#GENERAL-INFO)
