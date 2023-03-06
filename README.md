@@ -14,9 +14,9 @@ based on its kmer content using mash.
 By combining mash with a database of Mycobacteria phylogeny a UPGMA tree
 can be calculated to see batch matching Mycobacteria species.
 
-## Output example
-![Alt text](images/Sample.png?raw=true "Output example")
-![Alt text](images/Sample2.png?raw=true "Output example")
+## Output example Tortoli et al. database
+![Alt text](images/Part1.png?raw=true "Output example")
+![Alt text](images/Part2.png?raw=true "Output example")
 
 ## Authors
 J.P.M. Coolen 
@@ -32,9 +32,9 @@ Tool currently supports use of 3 databases:
 
 | Name       | Date | Content      | Notes                                        |
 |------------|----|--------------|----------------------------------------------|
-| Tortolli_10K.msh | x  | 149 strains  | https://doi.org/10.1016/j.meegid.2017.10.013 |
-| 20230303_78_strains_10K.msh   | 20230303 | 78 strains   | expension                                    |
-| 20230303_database_10K.msh   | 20230303 | 227 strains  | Complete database                            |
+| Tortoli_10K.msh | x  | 149 strains  | https://doi.org/10.1016/j.meegid.2017.10.013 |
+| 20230303_78_strains_10K.msh  | 20230303 | 78 strains   | expension                                    |
+| 20230303_database_10K.msh  | 20230303 | 227 strains  | Complete database                            |
 
 ## Literature
 Enrico Tortoli, Tarcisio Fedrizzi, Conor J. Meehan, Alberto Trovato, Antonella Grottola, Elisabetta Giacobazzi, Giulia Fregni Serpini, Sara Tagliazucchi, Anna Fabio, Clotilde Bettua, Roberto Bertorelli, Francesca Frascaro, Veronica De Sanctis, Monica Pecorari, Olivier Jousson, Nicola Segata, Daniela M. Cirillo,
@@ -44,5 +44,5 @@ https://doi.org/10.1016/j.meegid.2017.10.013.
 
 mash
 Ondov, B.D., Treangen, T.J., Melsted, P. et al.
-Mash: fast genome and metagenome distance estimation using MinHash. 
+fast genome and metagenome distance estimation using MinHash. 
 Genome Biol 17, 132 (2016). https://doi.org/10.1186/s13059-016-0997-x

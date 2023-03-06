@@ -17,8 +17,8 @@ sketchsize                        = "$params.sketchsize"
 // Database
 //database                    = "$baseDir/db/ref_15mer_${proportion}_variants.skf"
 //database                    = "$baseDir/db/Tortolli.msh"
-//database                    = "$baseDir/db/Tortolli_10k.msh"
-database                    = "$baseDir/db/20230303_database_10K.msh"
+database                    = "$baseDir/db/Tortoli_10k.msh"
+//database                    = "$baseDir/db/20230303_database_10K.msh"
 
 // Path prefixes
 r_folder                    = "$baseDir/R/"
