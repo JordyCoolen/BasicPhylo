@@ -3,6 +3,7 @@
 
 ## Table of contents
 * [Background](#GENERAL-INFO)
+* [Output example](#Output example)
 * [Authors](#Authors)
 * [Database](#Database)
 * [Literature](#Literature)
@@ -13,7 +14,10 @@ based on its kmer content using mash.
 By combining mash with a database of Mycobacteria phylogeny a UPGMA tree
 can be calculated to see batch matching Mycobacteria species.
 
-# Authors
+## Output example
+![Alt text](images/Sample.png?raw=true "Output example")
+
+## Authors
 J.P.M. Coolen 
 
 Pieter Koopman
@@ -22,7 +26,7 @@ Jodie Schildkraut (v0.1)
 
 Paul Verhoeven (v0.1)
 
-# Database
+## Database
 Tool currently supports use of 3 databases:
 
 | Name       | Date | Content      | Notes                                        |
